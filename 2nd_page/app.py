@@ -12,11 +12,25 @@ app = Flask(__name__)
 FEATURE_SETS = {
     'Net Income': ['Date', 'Total Expenses', 'Total Operating Expenses', 'Zakat/Tax'],
     'Sales': ['Date', 'Gross Income', 'Cost of Sales'],
-    'Zakat/Tax': ['Date', 'Net Income']
 }
+
+def translate_column_names(df):
+    return df.rename(columns={
+    'Date': 'Date',
+    'المبيعات': 'Sales',
+    'تكاليف المبيعات': 'Cost of Sales',
+    'إجمالي الدخل': 'Gross Income',
+    'اجمالي المصاريف التشغيليه': 'Total Operating Expenses',
+    'المصاريف/ الايرادات الأخري': 'Other Expenses/Revenues',
+    'إجمالي المصاريف': 'Total Expenses',
+    'صافي الدخل قبل الزكاة': 'Net Income Before Zakat',
+    'الزكاة/الضريبة': 'Zakat/Tax',
+    'صافي الدخل': 'Net Income'
+}, inplace=True)
 
 def load_and_preprocess_data(file):
     df = pd.read_excel(file, parse_dates=['Date'])
+    translate_column_names(df)
     df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
     df = df.sort_values('Date')
     return df
@@ -35,12 +49,14 @@ def build_model(input_shape):
     model = Sequential()
     model.add(LSTM(50, input_shape=input_shape))
     model.add(Dense(1))
-    model.compile(loss='mean_squared_error', optimizer='adam')
+    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
     return model
 
 def train_model(model, X_train, y_train):
     early_stopping = EarlyStopping(monitor='val_loss', patience=10)
-    model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=0, validation_split=0.2, callbacks=[early_stopping])
+    history = model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=0, validation_split=0.2, callbacks=[early_stopping])
+    print(f'\n{"*"*50}\nTraining accuracy: ', history.history['accuracy'][-1])
+    print(f'Training loss: ', history.history['loss'][-1])
     return model
 
 def predict_future(model, last_sequence, num_steps):
@@ -67,6 +83,7 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    print('\n\n\n\n\n starting model...')
     file = request.files['file']
     df = load_and_preprocess_data(file)
     
@@ -75,15 +92,13 @@ def predict():
         features = FEATURE_SETS[target]
         data = df[features + [target]].values
         
-        date_column = data[:, 0]
         data = data[:, 1:]  # Remove the date column for scaling
-        
         scaler = MinMaxScaler(feature_range=(0, 1))
         data_scaled = scaler.fit_transform(data)
         
         seq_length = 4
         sequences, targets = create_sequences(data_scaled, seq_length)
-        train_size = int(len(sequences) * 0.8)
+        train_size = int(len(sequences))
         X_train, y_train = sequences[:train_size], targets[:train_size]
         
         model = build_model((seq_length, data_scaled.shape[1]))
