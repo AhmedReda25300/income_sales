@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معلومات المركز المالي</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        .Main_container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(2, 1fr);
+            width: 50%;
+            margin: 3rem auto;
+            gap: 1rem;
+            justify-content: center;
+            justify-items: center;
+            align-items: center;
+        }
+
+        h1 {
+            color: #007bff;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.4rem;
+        }
+
+        .input-container label {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #007bff;
+            width: auto;
+            align-self: flex-start;
+        }
+
+        .input-container input {
+            max-width: 15rem;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: right;
+        }
+
+        .input-container input[readonly] {
+            background-color: #f1f1f1;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            justify-content: center;
+            margin: 30px auto;
+            display: flex;
+            gap: 2rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #groupBalance {
+            background-color: transparent;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>معلومات المركز المالي</h1>
+    <div class="Main_container">
+
+        <div class="input-container">
+            <label>رصيد المجموعة بداية العام</label>
+            <input type="number" id="startingBalance" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>تعويضات العام الحالي</label>
+            <input type="number" id="currentComp" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>إضافات العام الحالي</label>
+            <input type="number" id="currentAdd" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>تعويضات العام السابق</label>
+            <input type="number" id="prevComp" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>إضافات العام السابق</label>
+            <input type="number" id="prevAdd" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>رصيد المجموعة</label>
+            <input type="number" id="groupBalance" readonly>
+        </div>
+
+    </div>
+    <div class="btn">
+        <button onclick="calculateGroupBalance()">احسب رصيد المجموعة</button>
+
+        <button id="redirectBtn" style="display: none;" onclick="redirectToPage()">انتقل إلى الصفحة التالية</button>
+
+    </div>
+
+    <script>
+        function validateInput(input) {
+            if (input.value < 0) {
+                input.value = 0; // Reset the input to 0 if the value is negative
+            }
+        }
+
+        function calculateGroupBalance() {
+            const startingBalance = parseFloat(document.getElementById('startingBalance').value) || 0;
+            const currentAdd = parseFloat(document.getElementById('currentAdd').value) || 0;
+            const prevAdd = parseFloat(document.getElementById('prevAdd').value) || 0;
+            const currentComp = parseFloat(document.getElementById('currentComp').value) || 0;
+            const prevComp = parseFloat(document.getElementById('prevComp').value) || 0;
+
+            const result = startingBalance + (currentAdd + prevAdd) * 0.5 - (currentComp + prevComp) * 0.5;
+
+            document.getElementById('groupBalance').value = result.toFixed(2);
+            localStorage.setItem('groupBalance', result);
+
+            document.getElementById('redirectBtn').style.display = 'block';
+        }
+
+        function redirectToPage() {
+            window.location.href = 'nextpage.html';
+        }
+    </script>
+
+</body>
+
+</html>

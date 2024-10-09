@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ضريبة الدخل</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            width: 60%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #1565c0;
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .form-group input {
+            width: 45%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group label {
+            width: 45%;
+            font-size: 18px;
+            text-align: right;
+            line-height: 40px;
+        }
+        .button {
+            margin-top: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #1565c0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0d47a1;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ضريبة الدخل</h1>
+        
+        <div class="form-group">
+            <label for="expenses">مصاريف اهلاك</label>
+            <input type="number" id="expenses" name="مصاريف اهلاك">
+        </div>
+        
+        <div class="form-group">
+            <label for="sales">المبيعات أو الإيرادات</label>
+            <input type="number" id="sales" name="المبيعات أو الإيرادات">
+        </div>
+        
+        <div class="form-group">
+            <label for="salesCost">تكلفة المبيعات</label>
+            <input type="number" id="salesCost" name="تكلفة المبيعات">
+        </div>
+        
+        <div class="form-group">
+            <label for="grossProfit">مجمل الربح</label>
+            <input type="number" id="grossProfit" name="مجمل الربح">
+        </div>
+        
+        <div class="form-group">
+            <label for="otherIncome">إيرادات أخرى</label>
+            <input type="number" id="otherIncome" name="إيرادات أخرى">
+        </div>
+        
+        <div class="form-group">
+            <label for="improvements">التحسينات</label>
+            <input type="number" id="improvements" name="التحسينات">
+        </div>
+        
+        <div class="form-group">
+            <label for="otherExpenses">مصاريف أخرى</label>
+            <input type="number" id="otherExpenses" name="مصاريف أخرى">
+        </div>
+        
+        <div class="button">
+            <button onclick="calculateIncome()">حساب صافي الربح</button>
+        </div>
+        
+        <div class="result">
+            <p>صافي الربح: <span id="netIncome">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateIncome() {
+            // Get values from inputs
+            const sales = parseFloat(document.getElementById("sales").value) || 0;
+            const salesCost = parseFloat(document.getElementById("salesCost").value) || 0;
+            const otherIncome = parseFloat(document.getElementById("otherIncome").value) || 0;
+            const expenses = parseFloat(document.getElementById("expenses").value) || 0;
+            const improvements = parseFloat(document.getElementById("improvements").value) || 0;
+            const otherExpenses = parseFloat(document.getElementById("otherExpenses").value) || 0;
+
+            // Calculate gross profit
+            const grossProfit = sales - salesCost;
+
+            // Calculate net income
+            const netIncome = grossProfit + otherIncome - (expenses + improvements + otherExpenses);
+
+            // Display net income
+            document.getElementById("netIncome").innerText = netIncome.toFixed(2);
+        }
+    </script>
+
+</body>
+</html>
+
+
+const balance=localStorage.getItem('groupBalance');
