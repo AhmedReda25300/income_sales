@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة التنبؤ بالأرباح</title>
+    <link rel="icon" type="image/png" href="spark_logo.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            /* margin: 5% auto; */
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.4rem;
+            font-weight: bolder;
+            text-align: center;
+        }
+
+        h2 {
+            color: #007bff;
+            margin: 10px 0;
+            font-size: 3rem;
+            font-weight: bolder;
+            text-align: center;
+        }
+        p {
+            color: black;
+            margin: 10px 0;
+            font-weight: bolder;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10rem;
+            justify-content: center;
+            margin-top: 20px;
+            
+        }
+
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.9rem 2.1rem;
+            font-size: 1rem;
+            border-radius: 0.8rem;
+            cursor: pointer;
+            font-weight: bolder;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            margin-top: 10px;
+        }
+
+        .graph-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            gap: 30px;
+        }
+
+        .graph {
+            width: 45%;
+            height: 300px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .graph-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .graph {
+                width: 90%;
+            }
+        }
+        .logo-img {
+            width: 450px; /* Adjust the width */
+            height: auto;  /* Adjust the height proportionally */
+            padding-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="main_container">
+        <img class="logo-img" src="{{ url_for('static', filename='assets/logo.png') }}" alt="Spark Logo">
+    </main>
+    <div class="'tit">
+        <h1>هل أنت مستعد للمشاركة في تحقيق رؤية محاسبية</h1>
+        <h1>تقنية؟</h1>
+    </div>
+    <h2>أعرف أكثر</h2>
+    <p>سبارك: حينما تجتمع المحاسبة والتقنية</p>
+    <div class="button-container">
+        <!-- Buttons with proper redirection -->
+        <button class="button" onclick="location.href='/prediction'">تنبيهات ربحية وأكثر</button>
+        <button class="button" onclick="location.href='/Group_balance'">حساب ضريبية الدخل</button>
+    </div>
+</body>
+
+</html>

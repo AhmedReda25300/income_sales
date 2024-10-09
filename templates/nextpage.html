@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معلومات المركز المالي</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        .container {
+            margin: 50px auto;
+            width: 50%;
+        }
+        h1 {
+            color: #007bff;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .input-container label {
+            font-size: 1.2em;
+            color: #007bff;
+            width: 50%;
+        }
+        .input-container input {
+            width: 45%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: right;
+        }
+        .btn {
+            margin-top: 30px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .column {
+            width: 48%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>معلومات المركز المالي</h1>
+    <div class="row">
+        <div class="column">
+            <div class="input-container">
+                <label>تعويضات العام الحالي</label>
+                <input type="number" id="currentComp">
+            </div>
+            
+            <div class="input-container">
+                <label>تعويضات العام السابق</label>
+                <input type="number" id="prevComp">
+            </div>
+
+            <div class="input-container">
+                <label>رصيد المجموعة بداية العام</label>
+                <input type="number" id="startingBalance">
+            </div>
+        </div>
+        
+        <div class="column">
+            <div class="input-container">
+                <label>إضافات العام الحالي</label>
+                <input type="number" id="currentAdd">
+            </div>
+
+            <div class="input-container">
+                <label>إضافات العام السابق</label>
+                <input type="number" id="prevAdd">
+            </div>
+
+            <div class="input-container">
+                <label>رصيد المجموعة</label>
+                <input type="number" id="groupBalance" readonly>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn">
+        <button onclick="calculateGroupBalance()">احسب رصيد المجموعة</button>
+    </div>
+</div>
+
+<script>
+    const balance=localStorage.getItem('groupBalance');
+    console.log(balance)
+    function calculateGroupBalance() {
+        // Get the values from the inputs
+
+
+    }
+</script>
+
+</body>
+</html>

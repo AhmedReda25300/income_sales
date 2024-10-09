@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توقع الربح</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            height: 100vh;
+            direction: rtl;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 2rem;
+        }
+
+        form {
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .form_btn {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 3rem auto;
+            width: 90vw;
+        }
+
+        .chart_container {
+            width: calc(50% - 20px);
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 300px;
+        }
+
+        .input-field {
+            background-color: #eaeaea;
+            width: 40%;
+            height: 30px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+            background-color: #d3d3d3;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        a:hover {
+            background-color: #c0c0c0;
+        }
+
+        .next-quarter {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+            gap: 2rem;
+            align-self: center;
+            width: 100%;
+        }
+
+        .next-quarter label {
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.9rem 2.1rem;
+            font-size: 1rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bolder;
+            transition: background-color 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>تنبأ بمبيعاتك وصافي دخلك المتوقع</h1>
+
+    <form id="uploadForm">
+        <button type="button" id="predictButton">تنبأ</button>
+        <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;">
+        <button type="button" onclick="document.getElementById('fileInput').click()">رفع ملف اكسل</button>
+    </form>
+
+    <div class="container">
+        <div class="chart_container">
+            <canvas id="chart1"></canvas>
+            <div class="next-quarter">
+                <input type="text" id="predictedNetIncome" class="input-field" readonly>
+                <label>صافي الدخل المتوقع</label>
+            </div>
+        </div>
+        <div class="chart_container">
+            <canvas id="chart2"></canvas>
+            <div class="next-quarter">
+                <input type="text" id="predictedSales" class="input-field" readonly>
+                <label>المبيعات المتوقعة</label>
+            </div>
+        </div>
+        <div class="chart_container">
+            <canvas id="chart3"></canvas>
+            <div class="next-quarter">
+                <input type="text" id="predictedZakatTax" class="input-field" readonly>
+                <label>الزكاة/الضريبة المتوقعة</label>
+            </div>
+        </div>
+        <div class="chart_container">
+            <canvas id="chart4"></canvas>
+            <div class="next-quarter">
+                <input type="text" id="predictedCostOfSales" class="input-field" readonly>
+                <label>تكلفة المبيعات المتوقعة</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a class="btn" href="/">العودة إلى الصفحة الرئيسية</a>
+    </div>
+
+    <script>
+        let chart1, chart2, chart3, chart4;
+        let data; // To store uploaded data
+
+        // Initialize charts on window load
+        window.onload = initializeCharts;
+
+        function initializeCharts() {
+            const extendedDates = generateDates(2012, 12);
+            const ctx1 = document.getElementById('chart1').getContext('2d');
+            const ctx2 = document.getElementById('chart2').getContext('2d');
+            const ctx3 = document.getElementById('chart3').getContext('2d');
+            const ctx4 = document.getElementById('chart4').getContext('2d');
+
+            // Use different colors for each chart
+            chart1 = createChart(ctx1, 'صافي الدخل', [2683099, 3272308, 3321869, 3802888, 4016819, 4078821, 4403467, 4906646, 5201176, 4915753, 5067905, 5326541], 'rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)');
+            chart2 = createChart(ctx2, 'المبيعات', [3683099, 4272308, 4321869, 4802888, 5016819, 5078821, 5403467, 5906646, 6201176, 5915753, 6067905, 6326541], 'rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)');
+            chart3 = createChart(ctx3, 'الزكاة/الضريبة', [268309, 327230, 332186, 380288, 401681, 407882, 440346, 490664, 520117, 491575, 506790, 532654], 'rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)');
+            chart4 = createChart(ctx4, 'تكلفة المبيعات', [1841549, 2136154, 2160934, 2401444, 2508409, 2539410, 2701733, 2953323, 3100588, 2957876, 3033952, 3163270], 'rgba(255, 206, 86, 0.2)', 'rgba(255, 206, 86, 1)');
+        }
+
+        // Chart creation function for DRY code
+        function createChart(ctx, label, initialData, backgroundColor, borderColor) {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: generateDates(2012, 12),
+                    datasets: [{
+                        label: label,
+                        data: initialData,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'التاريخ'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: label
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Store the uploaded file but don't process it yet
+        document.getElementById('fileInput').addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                console.error('No file selected');
+                return;
+            }
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                data = XLSX.utils.sheet_to_json(worksheet);  // Store data for later use
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء معالجة الملف. الرجاء المحاولة مرة أخرى.');
+            }
+        });
+
+        // Perform the prediction when the user clicks "تنبأ"
+        document.getElementById('predictButton').addEventListener('click', async () => {
+            if (!data) {
+                alert('يرجى رفع ملف اكسل أولا');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('file', document.getElementById('fileInput').files[0]);
+
+                const response = await fetch('http://localhost:5000/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const predictions = await response.json();
+                console.log('Predictions:', predictions);
+                updateCharts(data, predictions);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء التنبؤ. الرجاء المحاولة مرة أخرى.');
+            }
+        });
+
+        // Update charts and display predictions
+        function updateCharts(data, predictions) {
+            const dates = data.map(item => formatDate(item.Date));
+            const netIncome = data.map(item => item['Net Income']);
+            const sales = data.map(item => item.Sales);
+            const zakatTax = data.map(item => item['Zakat/Tax']);
+            const costOfSales = data.map(item => item['Cost of Sales']);
+
+            updateChartData(chart1, dates, netIncome);
+            updateChartData(chart2, dates, sales);
+            updateChartData(chart3, dates, zakatTax);
+            updateChartData(chart4, dates, costOfSales);
+
+            document.getElementById('predictedNetIncome').value = predictions.predictedNetIncome.toFixed(2);
+            document.getElementById('predictedSales').value = predictions.predictedSales.toFixed(2);
+            document.getElementById('predictedZakatTax').value = predictions['predictedZakat/Tax'].toFixed(2);
+            document.getElementById('predictedCostOfSales').value = predictions.predictedCost_of_Sales.toFixed(2);
+        }
+
+        function updateChartData(chart, labels, data) {
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = data;
+            chart.update();
+        }
+
+        // Generate dates for the charts
+        function generateDates(startYear, numPeriods) {
+            let dates = [];
+            for (let i = 0; i < numPeriods; i++) {
+                const year = startYear + Math.floor(i / 2);
+                const monthDay = i % 2 === 0 ? '09/30' : '12/31';
+                dates.push(`${monthDay}/${year}`);
+            }
+            return dates;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
+        }
+    </script>
+</body>
+
+</html>
