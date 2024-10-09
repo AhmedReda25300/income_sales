@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<link>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio Button Form</title>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 1.2rem;
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    margin-bottom: auto;
+    position: absolute;
+    top: 8rem;
+    right: 15rem;
+    gap: 3rem;
+    /* align-items: center; */
+  }
+
+  h1 {
+    align-self: flex-end;
+    justify-self: flex-end;
+    color: #007bff;
+  }
+
+  .question {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 2rem;
+  }
+
+  .q2 {
+    margin-left: auto;
+  }
+
+  .question label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  button {
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  .radio_group {
+    display: flex;
+    gap: 4rem;
+    flex-direction: row-reverse;
+  }
+
+  .answer {
+    display: flex;
+  }
+
+  .submit {
+    width: 30%;
+    align-self: center;
+  }
+
+  .question>label:first-child {
+    color: #0056b3;
+  }
+</style>
+</head>
+
+<body>
+
+  <div class="form-container">
+    <h1>قبل الانتقال للخطوة التالية الرجاء الاجابة على التالي</h1>
+    <div class="question">
+      <label>في حال وجود ديون معدومة في قائمة الدخل هل تم توفر جميع الشروط الخاصه
+        بالديون المعدومة بناء على نص النظام الضريبي؟</label>
+      <div class="radio_group">
+        <div class="answer">
+          <label for="ndebt-yes">توفرت</label>
+          <input type="radio" id="ndebt-yes" name="ndebt" value="yes">
+        </div>
+        <div class="answer">
+          <label for="ndebt-no">لم تتوفر جميعها</label>
+          <input type="radio" id="ndebt-no" name="ndebt" value="no">
+        </div>
+      </div>
+    </div>
+
+    <div class="question q2">
+      <label>هل يوجد اي مباني لح تعد تستخدم من قبل الشركة وتم بيعها؟</label>
+      <div class="radio_group">
+        <div class="answer">
+          <label for="build-yes">نعم, يوجد</label>
+          <input type="radio" id="build-yes" name="build" value="yes">
+        </div>
+        <div class="answer">
+          <label for="build-no">لا يوجد</label>
+          <input type="radio" id="build-no" name="build" value="no">
+        </div>
+      </div>
+    </div>
+
+    <button class="submit" type="submit" onclick="moveToNextPage()">الخطوة التالية</button>
+  </div>
+
+  <script>
+    const ndebtValue = document.querySelector('input[name="ndebt"]:checked')?.value;
+    const buildcodingValue = document.querySelector('input[name="build"]:checked')?.value;
+
+
+    function moveToNextPage() {
+      window.location.href = "nextpage.html"; // Specify the next page URL here
+    }
+
+    if (ndebtValue) {
+      localStorage.setItem('ndebt', ndebtValue);
+    }
+    if (codingValue) {
+      localStorage.setItem('coding', codingValue);
+    }
+  </script>
+
+</body>
+
+</html>

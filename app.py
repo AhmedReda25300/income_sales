@@ -28,9 +28,9 @@ def index():
 def Group_balance():
     return render_template('Group_balance.html')
 
-@app.route('/nextpage')
-def nextpage():
-    return render_template('nextpage.html')
+@app.route('/Form')
+def Form():
+    return render_template('Form.html')
 
 @app.route('/Final_Income')
 def Final_Income():
