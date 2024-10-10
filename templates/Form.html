@@ -100,11 +100,11 @@
       <div class="radio_group">
         <div class="answer">
           <label for="ndebt-yes">توفرت</label>
-          <input type="radio" id="ndebt-yes" name="ndebt" value="yes">
+          <input type="radio" id="ndebt-yes" name="ndebt" value="1">
         </div>
         <div class="answer">
           <label for="ndebt-no">لم تتوفر جميعها</label>
-          <input type="radio" id="ndebt-no" name="ndebt" value="no">
+          <input type="radio" id="ndebt-no" name="ndebt" value="0">
         </div>
       </div>
     </div>
@@ -114,32 +114,34 @@
       <div class="radio_group">
         <div class="answer">
           <label for="build-yes">نعم, يوجد</label>
-          <input type="radio" id="build-yes" name="build" value="yes">
+          <input type="radio" id="build-yes" name="build" value="1">
         </div>
         <div class="answer">
           <label for="build-no">لا يوجد</label>
-          <input type="radio" id="build-no" name="build" value="no">
+          <input type="radio" id="build-no" name="build" value="0">
         </div>
       </div>
     </div>
 
-    <button class="submit" type="submit" onclick="moveToNextPage()">الخطوة التالية</button>
+    <button class="submit" type="submit" onclick="saveAnswersAndMove()">الخطوة التالية</button>
   </div>
 
   <script>
-    const ndebtValue = document.querySelector('input[name="ndebt"]:checked')?.value;
-    const buildcodingValue = document.querySelector('input[name="build"]:checked')?.value;
+    function saveAnswersAndMove() {
+      // Get selected radio button values
+      const ndebtValue = document.querySelector('input[name="ndebt"]:checked')?.value;
+      const buildValue = document.querySelector('input[name="build"]:checked')?.value;
 
+      // Check if values exist and save to localStorage
+      if (ndebtValue) {
+        localStorage.setItem('ndebt', ndebtValue);
+      }
+      if (buildValue) {
+        localStorage.setItem('build', buildValue);
+      }
 
-    function moveToNextPage() {
-      window.location.href = "nextpage.html"; // Specify the next page URL here
-    }
-
-    if (ndebtValue) {
-      localStorage.setItem('ndebt', ndebtValue);
-    }
-    if (codingValue) {
-      localStorage.setItem('coding', codingValue);
+      // Navigate to the next page
+      window.location.href = "income_Tax"; // Your next page
     }
   </script>
 

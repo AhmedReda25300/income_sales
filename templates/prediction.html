@@ -16,12 +16,13 @@
             background-color: #f4f4f4;
             height: 100vh;
             direction: rtl;
+            /* margin-bottom: 50px; */
         }
 
         h1 {
             color: #333;
             font-size: 20px;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         form {
@@ -53,20 +54,19 @@
         }
 
         .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin: 3rem auto;
-            width: 90vw;
+            width: 90%;
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-template-rows: auto auto;
+            justify-items: center;
+            gap: 30px;
+            margin: 0 auto;
         }
 
         .chart_container {
-            width: calc(50% - 20px);
-            height: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 1.8rem;
+            /* width: calc(50% - 20px); */
+            height: auto;
+            width: 85%;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             padding: 10px;
             background-color: #fff;
@@ -128,6 +128,24 @@
             font-weight: bolder;
             transition: background-color 0.3s;
         }
+
+        .footer {
+            /* height: 2rem; */
+            margin: 3rem auto;
+        }
+
+        .ch_group1 {
+            justify-self: end;
+        }
+
+        .ch_group2 {
+            justify-self: start;
+        }
+
+        .spacer {
+            height: 20px;
+            /* Adjust this value for the desired space */
+        }
     </style>
 </head>
 
@@ -141,28 +159,28 @@
     </form>
 
     <div class="container">
-        <div class="chart_container">
+        <div class="chart_container ch_group1">
             <canvas id="chart1"></canvas>
             <div class="next-quarter">
                 <input type="text" id="predictedNetIncome" class="input-field" readonly>
                 <label>صافي الدخل المتوقع</label>
             </div>
         </div>
-        <div class="chart_container">
+        <div class="chart_container ch_group2">
             <canvas id="chart2"></canvas>
             <div class="next-quarter">
                 <input type="text" id="predictedSales" class="input-field" readonly>
                 <label>المبيعات المتوقعة</label>
             </div>
         </div>
-        <div class="chart_container">
+        <div class="chart_container ch_group1">
             <canvas id="chart3"></canvas>
             <div class="next-quarter">
                 <input type="text" id="predictedZakatTax" class="input-field" readonly>
                 <label>الزكاة/الضريبة المتوقعة</label>
             </div>
         </div>
-        <div class="chart_container">
+        <div class="chart_container ch_group2">
             <canvas id="chart4"></canvas>
             <div class="next-quarter">
                 <input type="text" id="predictedCostOfSales" class="input-field" readonly>
@@ -174,7 +192,7 @@
     <div class="footer">
         <a class="btn" href="/">العودة إلى الصفحة الرئيسية</a>
     </div>
-
+    <div class="spacer"></div>
     <script>
         let chart1, chart2, chart3, chart4;
         let data; // To store uploaded data
@@ -190,18 +208,18 @@
             const ctx4 = document.getElementById('chart4').getContext('2d');
 
             // Use different colors for each chart
-            chart1 = createChart(ctx1, 'صافي الدخل', [2683099, 3272308, 3321869, 3802888, 4016819, 4078821, 4403467, 4906646, 5201176, 4915753, 5067905, 5326541], 'rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)');
-            chart2 = createChart(ctx2, 'المبيعات', [3683099, 4272308, 4321869, 4802888, 5016819, 5078821, 5403467, 5906646, 6201176, 5915753, 6067905, 6326541], 'rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)');
-            chart3 = createChart(ctx3, 'الزكاة/الضريبة', [268309, 327230, 332186, 380288, 401681, 407882, 440346, 490664, 520117, 491575, 506790, 532654], 'rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)');
-            chart4 = createChart(ctx4, 'تكلفة المبيعات', [1841549, 2136154, 2160934, 2401444, 2508409, 2539410, 2701733, 2953323, 3100588, 2957876, 3033952, 3163270], 'rgba(255, 206, 86, 0.2)', 'rgba(255, 206, 86, 1)');
+            chart1 = createChart(ctx1, 'صافي الدخل', [2683099, 3272308, 3321869, 3802888, 4016819, 4078821, 4403467, 4906646, 5201176, 4915753, 5067905, 5326541], 'rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)', extendedDates);
+            chart2 = createChart(ctx2, 'المبيعات', [3683099, 4272308, 4321869, 4802888, 5016819, 5078821, 5403467, 5906646, 6201176, 5915753, 6067905, 6326541], 'rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)', extendedDates);
+            chart3 = createChart(ctx3, 'الزكاة/الضريبة', [268309, 327230, 332186, 380288, 401681, 407882, 440346, 490664, 520117, 491575, 506790, 532654], 'rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)', extendedDates);
+            chart4 = createChart(ctx4, 'تكلفة المبيعات', [1841549, 2136154, 2160934, 2401444, 2508409, 2539410, 2701733, 2953323, 3100588, 2957876, 3033952, 3163270], 'rgba(255, 206, 86, 0.2)', 'rgba(255, 206, 86, 1)', extendedDates);
         }
 
         // Chart creation function for DRY code
-        function createChart(ctx, label, initialData, backgroundColor, borderColor) {
+        function createChart(ctx, label, initialData, backgroundColor, borderColor, dates) {
             return new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: generateDates(2012, 12),
+                    labels: dates,
                     datasets: [{
                         label: label,
                         data: initialData,
@@ -304,17 +322,22 @@
             chart.update();
         }
 
-        // Generate dates for the charts
-        function generateDates(startYear, numPeriods) {
+        function generateDates(startYear, numQuarters) {
             let dates = [];
-            for (let i = 0; i < numPeriods; i++) {
-                const year = startYear + Math.floor(i / 2);
-                const monthDay = i % 2 === 0 ? '09/30' : '12/31';
-                dates.push(`${monthDay}/${year}`);
+            let currentYear = startYear;
+            let currentQuarter = 1;
+
+            for (let i = 0; i < numQuarters; i++) {
+                dates.push(`${currentYear} Q${currentQuarter}`);
+                
+                currentQuarter++;
+                if (currentQuarter > 4) {
+                    currentQuarter = 1;
+                    currentYear++;
+                }
             }
             return dates;
         }
-
         function formatDate(dateString) {
             const date = new Date(dateString);
             return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;

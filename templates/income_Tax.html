@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معلومات المركز المالي</title>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+        .Main_container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(5, 1fr);
+            width: 50%;
+            margin: 3rem auto;
+            margin-bottom: 1rem;
+            gap: 1rem;
+            justify-content: center;
+            justify-items: center;
+            align-items: center;
+        }
+
+        h1 {
+            color: #007bff;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.4rem;
+        }
+
+        .input-container label {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #007bff;
+            width: auto;
+            align-self: flex-start;
+        }
+
+        .input-container input {
+            max-width: 15rem;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: right;
+        }
+
+        .btn {
+            justify-content: center;
+            display: flex;
+            gap: 2rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .Net label {
+            align-self: center;
+        }
+
+        .tax label {
+            align-self: center;
+
+        }
+
+        #Net_Profit,
+        #Tax,
+        #Profit_After_Tax {
+            background-color: transparent;
+            border: none;
+        }
+
+        .Net input,
+        .tax input {
+            text-align: center;
+        }
+
+        .tax {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>ضريبة الدخل</h1>
+    <div class="Main_container">
+
+        <div class="input-container">
+            <label>المبيعات أو الايرادات</label>
+            <input type="number" id="Revenues" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>مصاريف اهلاك</label>
+            <input type="number" id="Depreciation_Expenses" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>تكلفة المبيعات</label>
+            <input type="number" id="Cost_of_Sales" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>الديون المعدومة</label>
+            <input type="number" id="Bad_Debts" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>التحسينات</label>
+            <input type="number" id="Improvements" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>ايرادات اخرى</label>
+            <input type="number" id="Other_Revenues" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container">
+            <label>مصروفات اخرى</label>
+            <input type="number" id="Other_Expenses" oninput="validateInput(this)">
+        </div>
+
+        <div class="input-container Net">
+            <label>صافي الربح</label>
+            <input type="number" id="Net_Profit" readonly>
+        </div>
+        <div class="input-container tax">
+            <label>الضريبة</label>
+            <input type="number" id="Tax" readonly>
+        </div>
+        <div class="input-container tax">
+            <label>الربح بعد خصم الضريبة</label>
+            <input type="number" id="Profit_After_Tax" readonly>
+        </div>
+
+    </div>
+    <div class="btn">
+        <button onclick="calculatenet()">ضريبة الدخل</button>
+    </div>
+
+    <script>
+        function validateInput(input) {
+            if (input.value < 0) {
+                input.value = 0; // Reset the input to 0 if the value is negative
+            }
+        }
+        function calculatenet() {
+            const revenues = parseFloat(document.getElementById('Revenues').value) || 0;
+            const costOfSales = parseFloat(document.getElementById('Cost_of_Sales').value) || 0;
+            const Improvements = parseFloat(document.getElementById('Improvements').value) || 0;
+            const depreciationExpenses = parseFloat(document.getElementById('Depreciation_Expenses').value) || 0;
+            const badDebts = parseFloat(document.getElementById('Bad_Debts').value) || 0;
+            const otherExpenses = parseFloat(document.getElementById('Other_Expenses').value) || 0;
+            const otherRevenues = parseFloat(document.getElementById('Other_Revenues').value) || 0;
+
+            result = revenues - costOfSales - Improvements - depreciationExpenses - badDebts - otherExpenses + otherRevenues;
+
+            document.getElementById('Net_Profit').value = result.toFixed(2);
+            tax(result, Improvements, depreciationExpenses, badDebts);
+
+        }
+        function tax(result, Improvements, depreciationExpenses, badDebts) {
+            const groupBalance = parseFloat(localStorage.getItem('groupBalance')) || 0; //ضريبة الدخل 
+            const bad_dept_condition = parseInt(localStorage.getItem('ndebt'), 10); // Convert to number
+            const building_condition = parseInt(localStorage.getItem('build'), 10); // Convert to number
+            console.log(groupBalance, bad_dept_condition, building_condition)
+
+
+            let badDebts_holder = 0;
+            if (bad_dept_condition === 0) {
+                badDebts_holder = badDebts;
+            }
+            console.log(badDebts_holder);
+
+
+            let build_holder = 0;
+            if (building_condition === 1) {
+                build_holder = (groupBalance * 0.1);
+            }
+            console.log(build_holder);
+
+
+            const tax = (((Improvements) - groupBalance * 0.04) + (depreciationExpenses - groupBalance * 0.1) + badDebts_holder + build_holder) * 0.2
+            document.getElementById('Tax').value = tax.toFixed(2);
+            console.log(tax);
+
+
+
+            const profit_after_tax = result - tax
+            document.getElementById('Profit_After_Tax').value = profit_after_tax.toFixed(2);
+            console.log(profit_after_tax);
+
+            document.querySelectorAll('.tax').forEach(function (element) {
+                element.style.display = 'flex';
+            });
+        }
+
+
+    </script>
+
+</body>
+
+</html>

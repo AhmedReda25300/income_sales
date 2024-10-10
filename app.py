@@ -32,13 +32,15 @@ def Group_balance():
 def Form():
     return render_template('Form.html')
 
-@app.route('/Final_Income')
-def Final_Income():
-    return render_template('Final_Income.html')
+@app.route('/income_Tax')
+def income_Tax():
+    return render_template('income_Tax.html')
 
 @app.route('/prediction')
 def prediction():
     return render_template('prediction.html')
+
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -54,21 +56,19 @@ def upload_file():
     file.save(file_path)
 
     try:
-        # Read the uploaded file into a DataFrame
-        data = pd.read_excel(file_path)  # Ensure the file is in Excel format
-
-        # Ensure your DataFrame has the correct columns
+        data = pd.read_excel(file_path)  
+        #Data Validation
         if not {'Net Income', 'Sales','Zakat/Tax', 'Cost of Sales'}.issubset(data.columns):
             return jsonify({"error": "Missing required columns: Net Income, Sales, Date, Zakat/Tax, and Cost of Sales"}), 400
 
-        # Ensure there are no negative values
         if (data[['Net Income', 'Sales', 'Zakat/Tax', 'Cost of Sales']] < 0).any().any():
             return jsonify({"error": "Net Income, Sales, Zakat/Tax, and Cost of Sales must be non-negative"}), 400
 
-        # Prepare the data for LSTM
-        scaler = MinMaxScaler(feature_range=(0, 1))
+        #Data Scaling
+        scaler = MinMaxScaler(feature_range=(0, 1)) # to normalize the data 
         scaled_data = scaler.fit_transform(data[['Net Income', 'Sales', 'Zakat/Tax', 'Cost of Sales']])
 
+        # Dataset Creation
         def create_dataset(dataset, time_step=1):
             X, Y = [], []
             for i in range(len(dataset) - time_step - 1):
@@ -80,8 +80,7 @@ def upload_file():
         time_step = 1
         X, y = create_dataset(scaled_data, time_step)
 
-        # Reshape input to be [samples, time steps, features]
-        X = X.reshape(X.shape[0], X.shape[1], 4)  # Update to 4 features
+        X = X.reshape(X.shape[0], X.shape[1], 4) 
 
         # Build and train the LSTM model
         model = Sequential()
@@ -98,32 +97,16 @@ def upload_file():
         train_predict_inv = scaler.inverse_transform(train_predict)
         y_inv = scaler.inverse_transform(y)
 
-        # Calculate R² score for each target
-        r2_scores = {
-            'Net Income R²': r2_score(y_inv[:, 0], train_predict_inv[:, 0]),
-            'Sales R²': r2_score(y_inv[:, 1], train_predict_inv[:, 1]),
-            'Zakat/Tax R²': r2_score(y_inv[:, 2], train_predict_inv[:, 2]),
-            'Cost of Sales R²': r2_score(y_inv[:, 3], train_predict_inv[:, 3])
-        }
-
-        # Log R² scores
-        logging.info(f"Model R² Scores: {r2_scores}")
-        print(f"Model R² Scores: {r2_scores}")
-        print(1)
-        # Make predictions using the last data point
         last_data = scaled_data[-time_step:].reshape((1, time_step, 4))
-        print(2)
         prediction = model.predict(last_data)
-        print(3)
-        # Inverse transform the prediction to get original scale
         predicted_values = scaler.inverse_transform(prediction)
         print(f'Predicted Net Income: {predicted_values[0][0], predicted_values[0][1], predicted_values[0][2], predicted_values[0][3]}')
         # Return the predictions and R² scores
         return jsonify({
-            'predictedNetIncome': float(predicted_values[0][0]),
-            'predictedSales': float(predicted_values[0][1]),
-            'predictedZakat/Tax': float(predicted_values[0][2]),
-            'predictedCost_of_Sales': float(predicted_values[0][3]),
+            'predictedNetIncome': int(predicted_values[0][0]),
+            'predictedSales': int(predicted_values[0][1]),
+            'predictedZakat/Tax': int(predicted_values[0][2]),
+            'predictedCost_of_Sales': int(predicted_values[0][3]),
         })
 
     except Exception as e:
